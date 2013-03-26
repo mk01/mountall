@@ -724,7 +724,8 @@ parse_fstab (const char *filename)
 
 		mnt = find_mount (mntent->mnt_dir);
 		if (mnt
-		    && strcmp (mntent->mnt_type, "swap")) {
+		    && strcmp (mntent->mnt_type, "swap")
+		    && strcmp (mntent->mnt_type, "aufs")) {
 			update_mount (mnt,
 				      mntent->mnt_fsname,
 				      mntent->mnt_passno != 0,
@@ -1119,6 +1120,8 @@ is_parent (char *root,
 	nih_assert (root != NULL);
 	nih_assert (path != NULL);
 
+	if (len >= strlen (path)) return FALSE;	
+
 	len = strlen (root);
 	if ((! strncmp (path, root, len))
 	    && ((path[len] == '\0')
@@ -1261,6 +1264,10 @@ mount_policy (void)
 			/* Skip this mount entry */
 			if (other == mnt)
 				continue;
+
+			/* Is this an AUFS overlay? */
+			if (!strcmp(mnt->type,"aufs") && !strcmp(mnt->mountpoint,other->mountpoint))
+				mount_parent = other;
 
 			/* Is this a parent of our mountpoint? */
 			if (mnt->mountpoint
