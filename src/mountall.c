@@ -725,7 +725,7 @@ parse_fstab (const char *filename)
 		mnt = find_mount (mntent->mnt_dir);
 		if (mnt
 		    && strcmp (mntent->mnt_type, "swap")
-		    && strcmp (mntent->mnt_type, "aufs")) {
+		    && !strcmp (mntent->mnt_type, "aufs")) {
 			update_mount (mnt,
 				      mntent->mnt_fsname,
 				      mntent->mnt_passno != 0,
